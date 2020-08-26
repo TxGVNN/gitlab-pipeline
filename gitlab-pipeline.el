@@ -63,7 +63,7 @@
 
 ;;;###autoload
 (defun gitlab-pipeline-show-sha ()
-  "gitlab-pipeline-show-sha-at-point (support magit buffer)."
+  "Gitlab-pipeline-show-sha-at-point (support magit buffer)."
   (interactive)
   (let* ((origin (shell-command-to-string "git remote get-url origin"))
          (repo (url-hexify-string (replace-regexp-in-string "^.*+gitlab.com[:/]?\\(.*\\)\\(\.git\\)\n?" "\\1" origin)))
@@ -92,7 +92,7 @@
 
 ;;;###autoload
 (defun gitlab-pipeline-job-cancel-at-point ()
-  "Gitlab pipeline job cancel at point"
+  "Gitlab pipeline job cancel at point."
   (interactive)
   (let ((path (get-text-property (line-beginning-position) 'invisible)))
     (when path
