@@ -5,7 +5,7 @@
 ;; Author: Giap Tran <txgvnn@gmail.com>
 ;; URL: https://github.com/TxGVNN/gitlab-pipeline
 ;; Version: 1.0.0
-;; Package-Requires: ((emacs "25.1") (ghub) (ansi-color))
+;; Package-Requires: ((emacs "25.1") (ghub "3.3.0"))
 ;; Keywords: comm, tools, git
 
 ;; This file is NOT part of GNU Emacs.
@@ -57,7 +57,7 @@
         (setq j (+ j 1)))
       (insert "\n")
       (setq i (+ i 1)))
-    (beginning-of-buffer)
+    (goto-char (point-min))
     (switch-to-buffer (current-buffer))))
 
 ;;;###autoload
@@ -72,7 +72,7 @@
       (error "Only support gitlab service"))
     (unless sha (setq sha (read-string "Rev: ")))
     (setq sha (replace-regexp-in-string "\n" "" (shell-command-to-string (format "git rev-parse %s" sha))))
-    (gitlab-ci-show-pipeline-from-sha repo sha)))
+    (gitlab-pipeline-show-pipeline-from-sha repo sha)))
 
 ;;;###autoload
 (defun gitlab-pipeline-job-trace-at-point ()
