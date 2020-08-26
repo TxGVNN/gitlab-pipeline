@@ -1,0 +1,32 @@
+* Gitlab-pipeline
+
+A tool to check pipeline status in Emacs
+
+** Config gitlab token
+- Create PRIVATE key in gitlab setting
+- Setup `.authinfo[.gpg]` as bellow
+
+More detail https://magit.vc/manual/ghub
+
+#+BEGIN_SRC
+machine gitlab.com/api/v4 login txgvnn^ghub password ****
+#+END_SRC
+
+** Usage
+
+- Get pipelines of SHA git-commit
+
+#+BEGIN_SRC
+M-x gitlab-pipeline-show-sha
+#+END_SRC
+
+- Get log a job in gitlab-pipeline buffer (above)
+
+#+BEGIN_SRC
+M-x gitlab-pipeline-job-trace-at-point
+#+END_SRC
+
+- Cancel a job in gitlab-pipeline buffer
+#+BEGIN_SRC
+M-x gitlab-pipeline-job-cancel
+#+END_SRC
