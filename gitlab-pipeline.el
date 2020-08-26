@@ -64,13 +64,11 @@
 (defun gitlab-pipeline-show-sha ()
   "gitlab-pipeline-show-sha-at-point (support magit buffer)."
   (interactive)
-  (let* ((origin (split-string (shell-command-to-string "git remote get-url origin") ":"))
-         (repo (url-hexify-string
-                (replace-regexp-in-string "\.git\n?" ""
-                                          (car (cdr origin)))))
+  (let* ((origin (shell-command-to-string "git remote get-url origin"))
+         (repo (url-hexify-string (replace-regexp-in-string "^.*+gitlab.com[:/]?\\(.*\\)\\(\.git\\)\n?" "\\1" origin)))
          (sha))
     (if (fboundp 'magit-commit-at-point) (setq sha (magit-commit-at-point)))
-    (unless (string-match-p "gitlab.com" (car origin) )
+    (unless (string-match-p "gitlab.com" origin)
       (error "Only support gitlab service"))
     (unless sha (setq sha (read-string "Rev: ")))
     (setq sha (replace-regexp-in-string "\n" "" (shell-command-to-string (format "git rev-parse %s" sha))))
