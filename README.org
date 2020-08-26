@@ -4,7 +4,7 @@ A tool to check pipeline status in Emacs
 
 ** Config gitlab token
 - Create PRIVATE key in gitlab setting
-- Setup `.authinfo[.gpg]` as bellow
+- Setup ~.authinfo[.gpg]~ as bellow
 
 More detail https://magit.vc/manual/ghub
 
