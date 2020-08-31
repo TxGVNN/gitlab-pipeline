@@ -1,4 +1,4 @@
-;;; gitlab-pipeline.el --- Get infomations of Gitlab pipelines
+;;; gitlab-pipeline.el --- Get infomation about Gitlab pipelines -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2020 Giap Tran <txgvnn@gmail.com>
 
@@ -24,7 +24,11 @@
 ;; see <https://www.gnu.org/licenses/>.
 
 ;;; Commentary:
-;; M-x gitlab-pipeline-show-sha
+
+;; This package gets information about Gitlab pipelines.
+;; Currently it only supports repositories hosted on gitlab.com
+;; It can detect sha commit in magit-log buffer by 'magit-commit-at-point
+;; Usage: M-x gitlab-pipeline-show-sha
 
 ;;; Code:
 
@@ -70,7 +74,7 @@
          (sha))
     (if (fboundp 'magit-commit-at-point) (setq sha (magit-commit-at-point)))
     (unless (string-match-p "gitlab.com" origin)
-      (error "Only support gitlab service"))
+      (user-error "Only gitlab.com is supported"))
     (unless sha (setq sha (read-string "Rev: ")))
     (setq sha (replace-regexp-in-string "\n" "" (shell-command-to-string (format "git rev-parse %s" sha))))
     (gitlab-pipeline-show-pipeline-from-sha repo sha)))
