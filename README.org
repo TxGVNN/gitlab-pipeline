@@ -1,5 +1,7 @@
 * Gitlab-pipeline
 
+[[https://melpa.org/#/gitlab-pipeline][file:https://melpa.org/packages/gitlab-pipeline-badge.svg]]
+
 A tool to check pipeline status in Emacs
 
 ** Config gitlab token
