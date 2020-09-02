@@ -88,12 +88,13 @@
 (defun gitlab-pipeline-job-trace-at-point ()
   "Gitlab pipeline job trace at point."
   (interactive)
-  (let ((path (get-text-property (line-beginning-position) 'invisible))
+  (let* ((jobpath (get-text-property (line-beginning-position) 'invisible))
+        (path (format "%s/trace" jobpath))
         (host gitlab-pipeline-host))
     (when path
-      (with-current-buffer (get-buffer-create (format "*Gitlab-CI:%s" path))
+      (with-current-buffer (get-buffer-create (format "*Gitlab-CI:%s:%s" host path))
         (erase-buffer)
-        (insert (cdr (car (glab-get (format "%s/trace" path) nil :host host))))
+        (insert (cdr (car (glab-get path nil :host host))))
         (goto-char (point-min))
         (while (re-search-forward "" nil t)
           (replace-match "\n" nil nil))
@@ -104,12 +105,13 @@
 (defun gitlab-pipeline-job-cancel-at-point ()
   "Gitlab pipeline job cancel at point."
   (interactive)
-  (let ((path (get-text-property (line-beginning-position) 'invisible))
-        (host gitlab-pipeline-host))
+  (let* ((jobpath (get-text-property (line-beginning-position) 'invisible))
+         (path (format "%s/cancel" jobpath))
+         (host gitlab-pipeline-host))
     (when path
-      (with-current-buffer (get-buffer-create (format "*Gitlab-CI:%s:DELETE" path))
+      (with-current-buffer (get-buffer-create (format "*Gitlab-CI:%s:%s:CANCEL" host path))
         (erase-buffer)
-        (insert (cdr (car (glab-post (format "%s/cancel" path) nil :host host))))
+        (insert (cdr (car (glab-post path nil :host host))))
         (goto-char (point-min))
         (while (re-search-forward "" nil t)
           (replace-match "\n" nil nil))

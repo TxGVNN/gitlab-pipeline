@@ -11,7 +11,7 @@ A tool to check pipeline status in Emacs
 More detail https://magit.vc/manual/ghub
 
 #+BEGIN_SRC
-machine gitlab.com/api/v4 login txgvnn^ghub password ****
+machine <your-gitlab-host>/api/v4 login <your-gitlab-user>^ghub password ****
 #+END_SRC
 
 ** Usage
