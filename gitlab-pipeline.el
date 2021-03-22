@@ -55,7 +55,7 @@
         (while (< j (length jobs))
           (setq job (elt jobs j))
           (setq job_id (cdr (assoc 'id job)))
-          (insert (format "   - [%s] job: %s@%s %s:%s"  (cdr (assoc 'status pipeline))
+          (insert (format "   - [%s] job: %s@%s %s:%s"  (cdr (assoc 'status job))
                           job_id
                           (cdr (assoc 'ref job))
                           (cdr (assoc 'stage job))
