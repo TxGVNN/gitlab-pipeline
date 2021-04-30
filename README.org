@@ -28,7 +28,12 @@ M-x gitlab-pipeline-show-sha
 M-x gitlab-pipeline-job-trace-at-point
 #+END_SRC
 
+- Retry a job in gitlab-pipeline buffer
+#+BEGIN_SRC
+M-x gitlab-pipeline-job-retry-at-point
+#+END_SRC
+
 - Cancel a job in gitlab-pipeline buffer
 #+BEGIN_SRC
-M-x gitlab-pipeline-job-cancel
+M-x gitlab-pipeline-job-cancel-at-point
 #+END_SRC
