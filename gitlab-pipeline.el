@@ -82,15 +82,15 @@
         (unless sha (setq sha (read-string "Rev: ")))
         (setq sha (replace-regexp-in-string "\n" "" (shell-command-to-string (format "git rev-parse %s" sha))))
         (gitlab-pipeline-show-pipeline-from-sha (format "%s/api/v4" host) (url-hexify-string repo) sha))
-  (user-error "Cannot parse origin: %s" origin)))
+    (user-error "Cannot parse origin: %s" origin)))
 
 ;;;###autoload
 (defun gitlab-pipeline-job-trace-at-point ()
   "Gitlab pipeline job trace at point."
   (interactive)
   (let* ((jobpath (get-text-property (line-beginning-position) 'invisible))
-        (path (format "%s/trace" jobpath))
-        (host gitlab-pipeline-host))
+         (path (format "%s/trace" jobpath))
+         (host gitlab-pipeline-host))
     (when path
       (with-current-buffer (get-buffer-create (format "*Gitlab-CI:%s:%s" host path))
         (erase-buffer)
@@ -102,6 +102,17 @@
         (switch-to-buffer (current-buffer))))))
 
 ;;;###autoload
+(defun gitlab-pipeline-job-retry-at-point ()
+  "Gitlab pipeline job trace at point."
+  (interactive)
+  (let* ((jobpath (get-text-property (line-beginning-position) 'invisible))
+         (path (format "%s/retry" jobpath))
+         (host gitlab-pipeline-host))
+    (when path
+      (glab-post path nil :host host)
+      (message "Done"))))
+
+;;;###autoload
 (defun gitlab-pipeline-job-cancel-at-point ()
   "Gitlab pipeline job cancel at point."
   (interactive)
@@ -109,14 +120,8 @@
          (path (format "%s/cancel" jobpath))
          (host gitlab-pipeline-host))
     (when path
-      (with-current-buffer (get-buffer-create (format "*Gitlab-CI:%s:%s:CANCEL" host path))
-        (erase-buffer)
-        (insert (cdr (car (glab-post path nil :host host))))
-        (goto-char (point-min))
-        (while (re-search-forward "" nil t)
-          (replace-match "\n" nil nil))
-        (ansi-color-apply-on-region (point-min) (point-max))
-        (switch-to-buffer (current-buffer))))))
+      (glab-post path nil :host host)
+      (message "Done"))))
 
 ;;; gitlab-pipeline.el ends here
 (provide 'gitlab-pipeline)
