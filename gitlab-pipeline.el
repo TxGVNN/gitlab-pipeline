@@ -67,7 +67,8 @@
         (insert "\n")
         (setq i (+ i 1))))
     (goto-char (point-min))
-    (switch-to-buffer (current-buffer))))
+    (switch-to-buffer (current-buffer))
+    (setq-local buffer-read-only t)))
 
 ;;;###autoload
 (defun gitlab-pipeline-show-sha ()
@@ -99,7 +100,8 @@
         (while (re-search-forward "" nil t)
           (replace-match "\n" nil nil))
         (ansi-color-apply-on-region (point-min) (point-max))
-        (switch-to-buffer (current-buffer))))))
+        (switch-to-buffer (current-buffer))
+        (setq-local buffer-read-only t)))))
 
 ;;;###autoload
 (defun gitlab-pipeline-job-retry-at-point ()
