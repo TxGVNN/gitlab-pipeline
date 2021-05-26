@@ -75,9 +75,9 @@
   "Gitlab-pipeline-show-sha-at-point (support magit buffer)."
   (interactive)
   (if-let ((origin (shell-command-to-string "git remote get-url origin"))
-           (matched (string-match "\\(git@\\|https://\\)\\([^/:]+\\)[:/]?\\(.*\\)\\(\\.git\\)\\n?" origin))
+           (matched (string-match "\\(.*git@\\|https://\\)\\([^/:]+\\)[:/]?\\(:[0-9]+/\\)+?\\(.*\\)\\(\\.git\\)\\n?" origin))
            (host (match-string 2 origin))
-           (repo (match-string 3 origin)))
+           (repo (match-string 4 origin)))
       (let ((sha))
         (if (fboundp 'magit-commit-at-point) (setq sha (magit-commit-at-point)))
         (unless sha (setq sha (read-string "Rev: ")))
