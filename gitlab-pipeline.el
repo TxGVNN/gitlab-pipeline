@@ -38,12 +38,25 @@
 (defvar-local gitlab-pipeline-host "gitlab.com/api/v4"
   "Host for gitlab api calls. Set by gitlab-pipeline-show-pipeline-from-sha")
 
+(defun gitlab-pipeline-show-refresh ()
+  (interactive)
+  (if (and gitlab-pipeline-buffer-host
+           gitlab-pipeline-buffer-project-id
+           gitlab-pipeline-buffer-sha)
+      (gitlab-pipeline-show-pipeline-from-sha gitlab-pipeline-buffer-host
+                                              gitlab-pipeline-buffer-project-id
+                                              gitlab-pipeline-buffer-sha)
+    (user-error "Not called from a gitlab-pipeline show buffer")))
+
 (defun gitlab-pipeline-show-pipeline-from-sha(host project-id sha)
   "Show pipeline at SHA of PROJECT-ID in new buffer."
   (with-current-buffer (get-buffer-create (format "*Gitlab-CI:%s:/projects/%s/pipelines?sha=%s" host project-id sha))
+    (setq-local gitlab-pipeline-buffer-host host)
+    (setq-local gitlab-pipeline-buffer-project-id project-id)
+    (setq-local gitlab-pipeline-buffer-sha sha)
+
     (let ((inhibit-read-only t))
       (erase-buffer)
-      (setq-local gitlab-pipeline-host host)
       (let ((pipelines) (pipeline) (pipeline_id)
             (jobs) (job) (job_id) (i 0) (j))
         (setq pipelines (glab-get (format "/projects/%s/pipelines?sha=%s" project-id sha) nil :host host))
@@ -66,9 +79,10 @@
             (insert "\n")
             (setq j (+ j 1)))
           (insert "\n")
-          (setq i (+ i 1))))
-      (goto-char (point-min))
-      (switch-to-buffer (current-buffer)))
+          (setq i (+ i 1)))))
+
+    (goto-char (point-min))
+    (switch-to-buffer (current-buffer))
     (setq-local buffer-read-only t)))
 
 ;;;###autoload
@@ -92,7 +106,7 @@
   (interactive)
   (let* ((jobpath (get-text-property (line-beginning-position) 'invisible))
          (path (format "%s/trace" jobpath))
-         (host gitlab-pipeline-host))
+         (host gitlab-pipeline-buffer-host))
     (when path
       (with-current-buffer (get-buffer-create (format "*Gitlab-CI:%s:%s" host path))
         (erase-buffer)
@@ -110,7 +124,7 @@
   (interactive)
   (let* ((jobpath (get-text-property (line-beginning-position) 'invisible))
          (path (format "%s/retry" jobpath))
-         (host gitlab-pipeline-host))
+         (host gitlab-pipeline-buffer-host))
     (when path
       (glab-post path nil :host host)
       (message "Done"))))
@@ -121,7 +135,7 @@
   (interactive)
   (let* ((jobpath (get-text-property (line-beginning-position) 'invisible))
          (path (format "%s/cancel" jobpath))
-         (host gitlab-pipeline-host))
+         (host gitlab-pipeline-buffer-host))
     (when path
       (glab-post path nil :host host)
       (message "Done"))))
