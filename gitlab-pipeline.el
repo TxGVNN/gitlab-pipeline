@@ -70,14 +70,34 @@
     (switch-to-buffer (current-buffer))
     (setq-local buffer-read-only t)))
 
+(setq gitlab-pipeline--url-regexp
+      ;; This URL regular expression has been copied from forge:
+      ;; https://github.com/magit/forge/blob/551e51511e25505d14e05699a1707fd57e394a9a/lisp/forge-core.el#L242
+      (concat "\\`\\(?:git://\\|"
+              "[^/@]+@\\|"
+              "\\(?:ssh\\|ssh\\+git\\|git\\+ssh\\)://\\(?:[^/@]+@\\)?\\|"
+              "https?://\\(?:[^/@]+@\\)?\\)"
+              "\\([^:]*\\)"
+              "\\(:[0-9]+\\)?"
+              "\\(?:/\\|:/?\\)"
+              "\\(.+?\\)"
+              "\\(?:\\.git\\|/\\)?\n\\'"))
+
+(defun gitlab-pipeline--split-url (url)
+  "Return a list of '(host port repo) for a given path."
+  (and (string-match gitlab-pipeline--url-regexp url)
+       (list (match-string 1 url)
+             (match-string 2 url)
+             (match-string 3 url))))
+
 ;;;###autoload
 (defun gitlab-pipeline-show-sha ()
   "Gitlab-pipeline-show-sha-at-point (support magit buffer)."
   (interactive)
   (if-let ((origin (shell-command-to-string "git remote get-url origin"))
-           (matched (string-match "\\(git@\\|https://\\)\\([^/:]+\\)[:/]?\\(.*\\)\\(\\.git\\)\\n?" origin))
-           (host (match-string 2 origin))
-           (repo (match-string 3 origin)))
+           (parts (gitlab-pipeline--split-url origin))
+           (host (nth 0 parts))
+           (repo (nth 2 parts)))
       (let ((sha))
         (if (fboundp 'magit-commit-at-point) (setq sha (magit-commit-at-point)))
         (unless sha (setq sha (read-string "Rev: ")))
