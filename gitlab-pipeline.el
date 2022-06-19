@@ -128,6 +128,7 @@
          (path (format "%s/trace" jobpath))
          (host gitlab-pipeline-buffer-host))
     (when path
+      (ignore-error (kill-buffer (format "*Gitlab-CI:%s:%s" host path)))
       (with-current-buffer (get-buffer-create (format "*Gitlab-CI:%s:%s" host path))
         (erase-buffer)
         (insert (cdr (car (glab-get path nil :host host))))
