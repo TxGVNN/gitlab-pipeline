@@ -109,8 +109,10 @@
 (defun gitlab-pipeline-show-sha ()
   "Gitlab-pipeline-show-sha-at-point (support magit buffer)."
   (interactive)
-  (if-let ((origin (shell-command-to-string "git remote get-url origin"))
-           (parts (gitlab-pipeline--split-url origin))
+  (if-let ((origins (split-string (shell-command-to-string "git remote") "\n" t))
+           (origin (if (< (length origins) 2) (car origins) (completing-read "Origin: " origins)))
+           (origin-url (shell-command-to-string (format "git remote get-url %s" origin)))
+           (parts (gitlab-pipeline--split-url origin-url))
            (host (nth 0 parts))
            (repo (nth 2 parts)))
       (let ((sha))
@@ -118,7 +120,7 @@
         (unless sha (setq sha (read-string "Rev: ")))
         (setq sha (replace-regexp-in-string "\n" "" (shell-command-to-string (format "git rev-parse %s" sha))))
         (gitlab-pipeline-show-pipeline-from-sha (format "%s/api/v4" host) (url-hexify-string repo) sha))
-    (user-error "Cannot parse origin: %s" origin)))
+    (user-error "Cannot parse origin: %s" origin-url)))
 
 ;;;###autoload
 (defun gitlab-pipeline-job-trace-at-point ()
