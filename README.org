@@ -14,6 +14,10 @@ More detail https://magit.vc/manual/ghub
 machine <your-gitlab-host>/api/v4 login <your-gitlab-user>^ghub password ****
 #+END_SRC
 
+You can also use your own Ghub authentication token (or even reuse an
+existing one like Forge's) by customising
+`gitlab-pipeline-ghub-auth-token`.
+
 ** Usage
 
 - Get pipelines of SHA git-commit
