@@ -117,7 +117,7 @@
            (repo (nth 2 parts)))
       (let ((sha))
         (if (fboundp 'magit-commit-at-point) (setq sha (magit-commit-at-point)))
-        (unless sha (setq sha (read-string "Rev: ")))
+        (unless sha (setq sha (read-string "Rev: " nil nil "HEAD")))
         (setq sha (replace-regexp-in-string "\n" "" (shell-command-to-string (format "git rev-parse %s" sha))))
         (gitlab-pipeline-show-pipeline-from-sha (format "%s/api/v4" host) (url-hexify-string repo) sha))
     (user-error "Cannot parse origin: %s" origin-url)))
