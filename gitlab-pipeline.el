@@ -63,13 +63,17 @@
         (while (< i (length pipelines))
           (setq pipeline (elt pipelines i))
           (setq pipeline_id (cdr (assoc 'id pipeline)))
-          (insert (format "* [%s] pipeline: %s %s\n" (cdr (assoc 'status pipeline)) pipeline_id (cdr (assoc 'web_url pipeline))))
+          (insert (format
+                   "* [%s] pipeline: %s %s\n"
+                   (gitlab-pipeline--propertize-status (cdr (assoc 'status pipeline)))
+                   pipeline_id
+                   (cdr (assoc 'web_url pipeline))))
           (setq jobs (glab-get (format "/projects/%s/pipelines/%s/jobs" project-id pipeline_id) nil :host host))
           (setq j 0)
           (while (< j (length jobs))
             (setq job (elt jobs j))
             (setq job_id (cdr (assoc 'id job)))
-            (insert (format "   - [%s] job: %s@%s %s:%s"  (cdr (assoc 'status job))
+            (insert (format "   - [%s] job: %s@%s %s:%s"  (gitlab-pipeline--propertize-status (cdr (assoc 'status job)))
                             job_id
                             (cdr (assoc 'ref job))
                             (cdr (assoc 'stage job))
@@ -104,6 +108,15 @@
        (list (match-string 1 url)
              (match-string 2 url)
              (match-string 3 url))))
+
+(defun gitlab-pipeline--propertize-status (status)
+  (let ((face (cdr
+               (assoc status
+                      '(("canceled" . warning)
+                        ("failed" . error)
+                        ("skipped" . warning)
+                        ("success" . success))))))
+    (propertize status 'face face)))
 
 ;;;###autoload
 (defun gitlab-pipeline-show-sha ()
