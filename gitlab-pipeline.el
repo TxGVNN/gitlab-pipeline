@@ -38,6 +38,18 @@
 (defvar-local gitlab-pipeline-host "gitlab.com/api/v4"
   "Host for gitlab api calls. Set by gitlab-pipeline-show-pipeline-from-sha")
 
+(defgroup gitlab-pipeline nil
+  "Options concerning Gitlab pipeline."
+  :group 'tools)
+
+(defcustom gitlab-pipeline-ghub-auth-token nil
+  "Authentication token name to use.
+
+Defaults to Ghub's default."
+  :group 'gitlab-pipeline
+  :type '(choice (const :tag "Default" nil)
+                 (symbol :tag "Token name")))
+
 (defun gitlab-pipeline-show-refresh ()
   (interactive)
   (if (and gitlab-pipeline-buffer-host
@@ -59,7 +71,11 @@
       (erase-buffer)
       (let ((pipelines) (pipeline) (pipeline_id)
             (jobs) (job) (job_id) (i 0) (j))
-        (setq pipelines (glab-get (format "/projects/%s/pipelines?sha=%s" project-id sha) nil :host host))
+        (setq pipelines (glab-get
+                         (format "/projects/%s/pipelines?sha=%s" project-id sha)
+                         nil
+                         :host host
+                         :auth gitlab-pipeline-ghub-auth-token))
         (while (< i (length pipelines))
           (setq pipeline (elt pipelines i))
           (setq pipeline_id (cdr (assoc 'id pipeline)))
@@ -68,7 +84,11 @@
                    (gitlab-pipeline--propertize-status (cdr (assoc 'status pipeline)))
                    pipeline_id
                    (cdr (assoc 'web_url pipeline))))
-          (setq jobs (glab-get (format "/projects/%s/pipelines/%s/jobs" project-id pipeline_id) nil :host host))
+          (setq jobs (glab-get
+                      (format "/projects/%s/pipelines/%s/jobs" project-id pipeline_id)
+                      nil
+                      :host host
+                      :auth gitlab-pipeline-ghub-auth-token))
           (setq j 0)
           (while (< j (length jobs))
             (setq job (elt jobs j))
@@ -146,7 +166,7 @@
       (ignore-errors (kill-buffer (format "*Gitlab-CI:%s:%s" host path)))
       (with-current-buffer (get-buffer-create (format "*Gitlab-CI:%s:%s" host path))
         (erase-buffer)
-        (insert (cdr (car (glab-get path nil :host host))))
+        (insert (cdr (car (glab-get path nil :host host :auth gitlab-pipeline-ghub-auth-token))))
         (goto-char (point-min))
         (while (re-search-forward "" nil t)
           (replace-match "\n" nil nil))
@@ -162,7 +182,7 @@
          (path (format "%s/retry" jobpath))
          (host gitlab-pipeline-buffer-host))
     (when path
-      (glab-post path nil :host host)
+      (glab-post path nil :host host :auth gitlab-pipeline-ghub-auth-token)
       (message "Done"))))
 
 ;;;###autoload
@@ -173,7 +193,7 @@
          (path (format "%s/cancel" jobpath))
          (host gitlab-pipeline-buffer-host))
     (when path
-      (glab-post path nil :host host)
+      (glab-post path nil :host host :auth gitlab-pipeline-ghub-auth-token)
       (message "Done"))))
 
 ;;; gitlab-pipeline.el ends here
