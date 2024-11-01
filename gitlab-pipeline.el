@@ -135,6 +135,7 @@ Defaults to Ghub's default."
                       '(("canceled" . warning)
                         ("failed" . error)
                         ("skipped" . warning)
+                        ("running" . bold)
                         ("success" . success))))))
     (propertize status 'face face)))
 
